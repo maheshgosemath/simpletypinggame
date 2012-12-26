@@ -14,7 +14,8 @@
     -fx-background-color: radial-gradient(radius 100%, derive(-fx-base,20%), derive(-fx-base,-20%));
 }
 
-.button{
+.button
+{
     -fx-background-color:
         #000000,
         linear-gradient(#7ebcea, #2f4b8f),
@@ -29,6 +30,13 @@
 
 .button:hover
 {
-    -fx-border-width: 2px;
-    -fx-border-color: #000;
+    -fx-cursor: hand;
+    -fx-text-fill: RED;
+}
+
+.label
+{
+    -fx-font-family: "Arial";
+    -fx-font-size: 14;
+    -fx-effect: dropshadow( one-pass-box , rgb(0, 0, 0, 0.6), 0, 0.0 , 0 , 1 );
 }

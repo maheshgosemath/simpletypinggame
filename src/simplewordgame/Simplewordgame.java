@@ -35,14 +35,18 @@ import javafx.util.Duration;
  */
 public class Simplewordgame extends Application {
     
+    GridPane welcome=new GridPane();
+    Text instructions=new Text();
+    
+    GridPane end=new GridPane();
+    Label finalScore=new Label("Your Final Score");
+    
     Random r=new Random();
     VBox vbox=new VBox();
-    StackPane bottom=new StackPane();
     DropShadow shadow=new DropShadow();
     ImageView imageWrong;
     ImageView imageRight;
     Text text1;
-    Button btn=new Button("Finish");
     int rand, correct=0, incorrect=0, unanswered=0, total=0;
     int timeNow, timeElapsed;
     Label first =new Label("Correct");
@@ -62,6 +66,65 @@ public class Simplewordgame extends Application {
     
     @Override
     public void start(Stage primaryStage) {
+        
+        vbox.setVisible(false);
+        
+        //taking system time for creating counter
+        final Timeline time=new Timeline();     
+        time.setCycleCount(Timeline.INDEFINITE);
+            KeyFrame keyFrame = new KeyFrame(Duration.millis(47), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    checkTime();
+                }
+            });
+            time.getKeyFrames().add(keyFrame);
+        
+        String insts="1. The game is meant for testing your typing skills.\n\n"+
+                "2. You have to press the key that is appearing on the screen.\n\n"+
+                "3. Pressing correct screen will increase your accuracy.\n\n"+
+                "4. Every appeared character will last for 3 secs on the screen \n"+
+                    " \tif you fail to type the key the character will be skipped.\n\n"+
+                "5. Pressing wrong character will decrease your accuracy\n\n"+
+                "Good Luck!";
+        
+        instructions.setText(insts);
+        instructions.setFont(new Font(14));
+        //instructions.setWrappingWidth(200);
+        
+        Button enter=new Button("Enter");
+        enter.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                welcome.setVisible(false);
+                vbox.setVisible(true);
+                time.play();
+                timeElapsed=(int)System.currentTimeMillis();
+            }
+        });
+        
+        welcome.addRow(1, instructions);
+        welcome.addRow(2, enter);
+        welcome.setAlignment(Pos.CENTER);
+        welcome.setVgap(5);
+        welcome.setVisible(true);
+        
+        final Label accuracy=new Label();
+        final Label finalRight=new Label();
+        final Label finalWrong=new Label();
+        final Label finalSkipped=new Label();
+        final Label finalTotal=new Label();
+        finalScore.setFont(Font.font("Times New Roman", 30));
+        finalScore.setTextFill(Color.web("#464646"));
+        end.addRow(0, finalScore);
+        end.addRow(1, accuracy);
+        end.addRow(2, finalRight);
+        end.addRow(3, finalWrong);
+        end.addRow(4, finalSkipped);
+        end.addRow(5, finalTotal);
+        end.setVisible(false);
+        end.setAlignment(Pos.CENTER);
         
         //image attributes for displaying wrong answer
         imageWrong=new ImageView(new Image(getClass().getResourceAsStream("wrong.png")));
@@ -86,22 +149,26 @@ public class Simplewordgame extends Application {
         text1.setFill(Color.BLUE);
         text1.setEffect(shadow);
         
-        //taking system time for creating counter
-        timeElapsed=(int)System.currentTimeMillis();
-        Timeline time=new Timeline();
+        Button btn=new Button("Finish");
+        btn.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                vbox.setVisible(false);
+                end.setVisible(true);
+                int accurarcy=correct/total;
+                accuracy.setText("Accurarcy \t "+accurarcy);
+                finalRight.setText("Correct \t "+correct);
+                finalWrong.setText("Incorrect \t "+incorrect);
+                finalSkipped.setText("Skipped \t "+unanswered);
+                finalTotal.setText("Total \t "+total);
+            }
+        });
         
-        time.setCycleCount(Timeline.INDEFINITE);
-            KeyFrame keyFrame = new KeyFrame(Duration.millis(47), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    checkTime();
-                }
-            });
-            time.getKeyFrames().add(keyFrame);
+        StackPane screen = new StackPane();
+        screen.setAlignment(Pos.CENTER);
+        screen.getChildren().addAll(text1,imageWrong,imageRight);
         
-        StackPane root = new StackPane();
-        root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(text1,imageWrong,imageRight);
         GridPane grid=new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setId("grid");
@@ -112,16 +179,22 @@ public class Simplewordgame extends Application {
         grid.addRow(3, third, unansweredTakes);
         grid.addRow(4, fourth, totalScore);
         
+        StackPane bottom=new StackPane();
         bottom.setAlignment(Pos.CENTER);
         bottom.getChildren().add(btn);
         
         vbox.setSpacing(15);
-        vbox.getChildren().add(root);
+        vbox.getChildren().add(screen);
         vbox.getChildren().add(grid);
         vbox.getChildren().add(bottom);
         
-        Scene scene = new Scene(vbox, 300, 250);
-        time.play();
+        GridPane root=new GridPane();
+        root.getChildren().add(welcome);
+        root.getChildren().add(vbox);
+        root.getChildren().add(end);
+        root.setAlignment(Pos.CENTER);
+        
+        Scene scene = new Scene(root, 400, 400);
         
         scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
         
@@ -132,8 +205,9 @@ public class Simplewordgame extends Application {
                 if(t.getCode()==codes[rand])
                 {
                     correct++;
+                    total++;
                     right.setText(Integer.toString(correct));
-                    totalScore.setText(Integer.toString((Integer.parseInt(totalScore.getText())+1)));
+                    totalScore.setText(Integer.toString(total));
                     text1.setFill(Color.GREEN);
                     imageRight.setVisible(true);                    
                     imageFade.setFromValue(0.0);
@@ -165,8 +239,9 @@ public class Simplewordgame extends Application {
                 else
                 {
                     incorrect++;
+                    total++;
                     wrong.setText(Integer.toString(incorrect));
-                    totalScore.setText(Integer.toString((Integer.parseInt(totalScore.getText())+1)));
+                    totalScore.setText(Integer.toString(total));
                     text1.setFill(Color.RED);
                     imageWrong.setVisible(true);                    
                     imageFade.setFromValue(0.0);
@@ -210,7 +285,8 @@ public class Simplewordgame extends Application {
         {
             unanswered++;
             unansweredTakes.setText(Integer.toString(unanswered));
-            totalScore.setText(Integer.toString((Integer.parseInt(totalScore.getText())+1)));
+            total++;
+            totalScore.setText(Integer.toString(total));
             imageWrong.setVisible(false);
             rand=r.nextInt(8);
             FadeTransition fade=new FadeTransition(Duration.millis(1000),text1);
@@ -234,11 +310,6 @@ public class Simplewordgame extends Application {
      *
      * @param args the command line arguments
      */
-    
-    public void changeCharacter()
-    {
-        
-    }
     
     public static void main(String[] args) {
         launch(args);      

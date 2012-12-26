@@ -11,7 +11,7 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="simplewordgame.jar" size="50420" download="eager" />
+    <jar href="simplewordgame.jar" size="54851" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="simplewordgame" >
     <param name="requiredFXVersion" value="2.2+"/>
