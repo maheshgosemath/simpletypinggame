@@ -15,7 +15,7 @@ function start() {
     var labelMessage = new Label("Type the character");
     var label = new Label();
     label.setText('Lets start');
-    var labelScore = new Label("Your Score: ");
+    var labelScore = new Label("Your Score: 0 / 0");
 
     var root = new StackPane();
     
@@ -38,13 +38,11 @@ function start() {
     	if(e.getCode() === alphabets[random]) {
     		labelMessage.setText('Correct');
     		score++;
-    		labelScore.setText("Your score: " + score + " / " + total);
-    		label.setText(generateRandom());
     	} else {
     		labelMessage.setText('Wrong');
-    		labelScore.setText("Your score: " + score + " / " + total);
-    		label.setText(generateRandom());
     	}
+    	labelScore.setText("Your score: " + score + " / " + total);
+                      label.setText(generateRandom());
     };
     $STAGE.scene = scene;
     $STAGE.show();
